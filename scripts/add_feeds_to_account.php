@@ -93,7 +93,7 @@ foreach ($feeds as $feed) {
     $now_in_period = rebase_time($now, $dataset_meta);
 
     // 3. Calculate how many datapoints to copy from the dataset file to the target feed file
-    $dp_to_copy = floor($now_in_period - $target_end_time_in_period) / $interval;
+    $dp_to_copy = floor(($now_in_period - $target_end_time_in_period) / $interval);
 
     if ($dp_to_copy > 0) {
         $seek_pos = floor($target_end_time_in_period / $interval);
