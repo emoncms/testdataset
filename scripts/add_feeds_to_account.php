@@ -7,55 +7,42 @@ if (posix_geteuid() != 0) {
     die("This script must be run as root/sudo\n");
 }
 
+$cwd = getcwd()."/";
 include "settings.php";
 include "common.php";
 
-$username = "test";
-$password = "test";
-
-// Authenticate user and get apikey
-$result = http_request("POST", $host . "user/auth.json", array("username" => $username, "password" => $password));
-$result = json_decode($result, true);
-if (!isset($result['success']) || $result['success'] == false) die("Authentication failed\n");
-print $result['apikey_write'] . "\n";
-$apikey = $result['apikey_write'];
-
-// Fetch feed list
-$existing_feeds = json_decode(http_request("GET", $host . "feed/list.json", array("apikey"=>$apikey)), true);
-print "Existing feeds: " . count($existing_feeds) . "\n";
+include "/var/www/emoncms/Lib/load_emoncms.php";
+$userid = 2;
 
 // get timestamp midnight this morning
 $date = new DateTime();
 $date->setTimezone(new DateTimeZone('Europe/London'));
 $now = $date->getTimestamp();
 
-$dir = "phpfina/";
+$dir = $cwd."phpfina/";
+echo "Dataset directory: $dir\n";
 // get list of feeds from dataset directory phpfina
 $feeds = glob($dir."*.meta");
-foreach ($feeds as $feed) {
-    $feed = str_replace("phpfina/", "", $feed);
-    $feedname = trim(str_replace(".meta", "", $feed));
+foreach ($feeds as $feedfile) {
+    $node = "testdataset";
+    $feedfile = str_replace($dir, "", $feedfile);
+    $feedname = trim(str_replace(".meta", "", $feedfile));
 
     // 1. Get feed meta data
     $dataset_meta = get_meta($dir, $feedname);
     $interval = $dataset_meta->interval;
 
-    // Check if feed already exists
-    $feed_exists = false;
-    $feedid = null;
-    foreach ($existing_feeds as $existing_feed) {
-        if ($existing_feed['name'] == $feedname) {
-            $feed_exists = true;
-            $feedid = $existing_feed['id'];
-            print "Feed already exists: " . $feedname . "\n";
-            break;
-        }
-    }
+    $feedid = $feed->exists_tag_name($userid, $node, $feedname);
 
-    if ((!$feed_exists)) {
-        // 2. Add feed to emoncms account
-        $feedid = create_feed($host, $apikey, "testdataset", $feedname, $interval);
-        if ($feedid === false) continue;
+    if (!$feedid) 
+    {
+        $result = $feed->create($userid,$node,$feedname,5,$dataset_meta);
+        if (!$result['success']) {
+            print "Failed to add feed: " . $feedname . "\n";
+            continue;
+        }
+        $feedid = $result['feedid'];
+        print "Feed created with id: " . $feedid . "\n";
 
         // Get start_time of new feed using datetime now -1 year
         $date = new DateTime();
@@ -108,7 +95,12 @@ foreach ($feeds as $feed) {
         $fh = fopen($phpfina_dir. $feedid . ".dat", "a");
         fwrite($fh, $data);
         fclose($fh);
+
+        print "- Appended $dp_to_copy datapoints to feedid: $feedid\n";
     }
+
+    $timevalue = lastvalue($phpfina_dir, $feedid);
+    $feed->set_timevalue($feedid, $timevalue['value'], $timevalue['time']);
 }
 
 function rebase_time($time, $dataset_meta) {

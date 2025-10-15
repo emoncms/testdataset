@@ -81,3 +81,24 @@ function create_feed($host, $apikey, $node, $name, $interval) {
     print "- Feed added with id: " . $result->feedid . "\n";
     return $result->feedid;
 }
+
+function lastvalue($dir, $id)
+{
+    $id = (int) $id;
+
+    if (!$meta = get_meta($dir, $id)) return false;
+    if (!$meta->npoints) return false;
+    
+
+    $fh = fopen($dir. $id . ".dat", "r");
+    fseek($fh,($meta->npoints-1)*4);
+    $d = fread($fh,4);
+    fclose($fh);
+
+    $value = null;
+    $val = unpack("f",$d);
+    if (!is_nan($val[1])) {
+        $value = (float) $val[1];
+    }
+    return array('time'=>$meta->end_time, 'value'=>$value);
+}
