@@ -14,10 +14,16 @@ First, unzip the phpfina data files:
 unzip phpfina.zip
 ```
 
-### 2. Add feeds to account
-Run the script to add the base feeds to your Emoncms account:
+### 2. Create settings.php 
+Copy example.settings.php over to settings.php. Change the userid as required!
 ```bash
-php scripts/add_feeds_to_account.php
+sudo cp scripts/example.settings.php scripts/settings.php
+```
+
+### 3. Add feeds to account
+Run the script to add the base feeds to your Emoncms account (re-run the script to update latest data - simulates live data based on round robin approach).
+```bash
+sudo php scripts/add_feeds_to_account.php
 ```
 
 This script creates feeds from the phpfina dataset files. The following feeds are available in the phpfina folder:
@@ -42,10 +48,10 @@ This script creates feeds from the phpfina dataset files. The following feeds ar
 **Solar generation:**
 - **solar** - Solar PV generation (W)
 
-### 3. Post-processing
+### 4. Post-processing
 Run the post-processing script to generate additional calculated feeds:
 ```bash
-php scripts/post_process.php
+sudo php scripts/post_process.php
 ```
 
 This script performs three main operations:

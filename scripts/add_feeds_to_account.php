@@ -8,11 +8,14 @@ if (posix_geteuid() != 0) {
 }
 
 $cwd = getcwd()."/";
-include "settings.php";
-include "common.php";
 
 include "/var/www/emoncms/Lib/load_emoncms.php";
-$userid = 2;
+
+if (!file_exists($cwd."scripts/settings.php")) {
+    die("Please create settings.php from example.settings.php\n");
+}
+include $cwd."scripts/settings.php";
+include $cwd."scripts/common.php";
 
 // get timestamp midnight this morning
 $date = new DateTime();

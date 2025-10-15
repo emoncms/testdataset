@@ -2,13 +2,17 @@
 if (posix_geteuid() != 0) {
     die("This script must be run as root/sudo\n");
 }
+$cwd = getcwd()."/";
 include "/var/www/emoncms/Lib/load_emoncms.php";
 include "Modules/postprocess/postprocess_model.php";
 $postprocess = new PostProcess($mysqli, $redis, $feed);
 $processes = $postprocess->get_processes("$linked_modules_dir/postprocess");
 $process_classes = $postprocess->get_process_classes();
 
-$userid = 2;
+if (!file_exists($cwd."scripts/settings.php")) {
+    die("Please create settings.php from example.settings.php\n");
+}
+include $cwd."scripts/settings.php";
 
 // --------------------------------------------------------------------------
 // Create "use" feed as sum of appliances, lighting, cooker, heatpump and car
