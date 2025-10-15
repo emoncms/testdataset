@@ -24,9 +24,11 @@ echo "Dataset directory: $dir\n";
 // get list of feeds from dataset directory phpfina
 $feeds = glob($dir."*.meta");
 foreach ($feeds as $feedfile) {
-    $node = "testdataset";
     $feedfile = str_replace($dir, "", $feedfile);
     $feedname = trim(str_replace(".meta", "", $feedfile));
+    // split feedname by _ to get node name
+    $parts = explode("_", $feedname);
+    $node = $parts[0];
 
     // 1. Get feed meta data
     $dataset_meta = get_meta($dir, $feedname);
@@ -102,6 +104,8 @@ foreach ($feeds as $feedfile) {
     $timevalue = lastvalue($phpfina_dir, $feedid);
     $feed->set_timevalue($feedid, $timevalue['value'], $timevalue['time']);
 }
+
+$feed->update_user_feeds_size($userid);
 
 function rebase_time($time, $dataset_meta) {
     $full_period = $dataset_meta->end_time - $dataset_meta->start_time;
