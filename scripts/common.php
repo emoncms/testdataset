@@ -14,10 +14,24 @@ function get_meta($dir, $id)
     
     // Calculate npoints from .dat file size
     $datfile = $dir . $id . '.dat';
+    clearstatcache($datfile);
     $npoints = file_exists($datfile) ? floor(filesize($datfile) / 4.0) : 0;
     $end_time = max(0, $start_time + ($interval * ($npoints - 1)));
     
     return (object) compact('interval', 'start_time', 'npoints', 'end_time');
+}
+
+function create_meta($dir, $id, $interval, $start_time)
+{
+    $metafile = $dir . $id . '.meta';
+    if (!file_exists($metafile)) return false;
+
+    $fp = fopen($metafile, "wb");
+    fwrite($fp, pack("I",0));
+    fwrite($fp, pack("I",0));
+    fwrite($fp, pack('I', $interval));
+    fwrite($fp, pack('I', $start_time));
+    fclose($fp);
 }
 
 function http_request($method, $url, $data)
@@ -42,4 +56,28 @@ function http_request($method, $url, $data)
     $resp = curl_exec($curl);
     curl_close($curl);
     return $resp;
+}
+
+function create_feed($host, $apikey, $node, $name, $interval) {
+    print "Adding feed: " . $node.":".$name . "\n";
+    $result = http_request(
+        "GET", 
+        $host."feed/create.json", 
+        array(
+            'name' => $name, 
+            'engine' => 5, 
+            'tag' => $node,
+            'options'=>json_encode(array(
+                'interval'=>$interval
+            )), 
+            'apikey' => $apikey
+        )
+    );
+    $result = json_decode($result);
+    if (!isset($result->success) || $result->success == false) {
+        print "Failed to add feed: " . $name . "\n";
+        return false;
+    }
+    print "- Feed added with id: " . $result->feedid . "\n";
+    return $result->feedid;
 }
