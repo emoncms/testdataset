@@ -34,13 +34,18 @@ foreach ($feeds as $feedfile) {
     $dataset_meta = get_meta($dir, $feedname);
     $interval = $dataset_meta->interval;
 
-    $feedid = $feed->exists_tag_name($userid, $node, $feedname);
+    $emoncms_feed_name = $feedname;
+    if ($feedname == "power_solar") {
+        $emoncms_feed_name = "solar";
+    }
+
+    $feedid = $feed->exists_tag_name($userid, $node, $emoncms_feed_name);
 
     if (!$feedid) 
     {
-        $result = $feed->create($userid,$node,$feedname,5,$dataset_meta);
+        $result = $feed->create($userid,$node,$emoncms_feed_name,5,$dataset_meta);
         if (!$result['success']) {
-            print "Failed to add feed: " . $feedname . "\n";
+            print "Failed to add feed: " . $emoncms_feed_name . "\n";
             continue;
         }
         $feedid = $result['feedid'];
