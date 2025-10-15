@@ -6,6 +6,22 @@ A heatpump, solar and home electric use dataset for aiding with Emoncms and Heat
 - Scripts here can be used to transpose this dataset to last 365 day period.
 - Battery, grid import/export data and kWh data can be generated from this base power data set.
 
+## Dataset in Action
+
+The test dataset enables full functionality testing of Emoncms applications:
+
+**MyHeatpump App** - The My Heatpump app can be used to explore the performance of a heatpump including, electricity consumption, heat output, COP and system temperatures.
+
+![](myheatpump_app.png)
+
+**MySolar Battery App** - This app can be used to explore onsite solar generation, self consumption, battery integration, export and building consumption.
+
+![](mysolar_battery_app.png)
+
+**MySolar App** - The My Solar app can be used to explore onsite solar generation, self consumption, export and building consumption both in realtime with a moving power graph view and historically with a daily and monthly bargraph.
+
+![](mysolar_app.png)
+
 ## Setup Instructions
 
 ### 1. Extract the dataset
