@@ -86,7 +86,7 @@ $battery_config = (object) array(
     "timezone" => "Europe/London",
     "offpeak_soc_target" => 75,
     "offpeak_start" => 2,
-    "discharge_start"=>12,
+    "discharge_start"=>7,
     "discharge_end"=>22,
     "peak_export_enabled"=>1,
     "peak_export_start"=>16,
@@ -108,9 +108,13 @@ $battery_config = (object) array(
     "export_kwh" => get_or_create_feed($userid, "battery", "export_kwh", 10, $clear_battery),
     
     // More detailed breakdown
-    "solar_direct_kwh" => get_or_create_feed($userid, "battery", "solar_direct_kwh", 10, $clear_battery),
+    "solar_to_load_kwh" => get_or_create_feed($userid, "battery", "solar_to_load_kwh", 10, $clear_battery),
+    "solar_to_grid_kwh" => get_or_create_feed($userid, "battery", "solar_to_grid_kwh", 10, $clear_battery),
     "solar_to_battery_kwh" => get_or_create_feed($userid, "battery", "solar_to_battery_kwh", 10, $clear_battery),
     "battery_to_load_kwh" => get_or_create_feed($userid, "battery", "battery_to_load_kwh", 10, $clear_battery),
+    "battery_to_grid_kwh" => get_or_create_feed($userid, "battery", "battery_to_grid_kwh", 10, $clear_battery),
+    "grid_to_load_kwh" => get_or_create_feed($userid, "battery", "grid_to_load_kwh", 10, $clear_battery),
+    "grid_to_battery_kwh" => get_or_create_feed($userid, "battery", "grid_to_battery_kwh", 10, $clear_battery),
     
     // Control params
     "process_mode" => "all",
