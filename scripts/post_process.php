@@ -73,6 +73,7 @@ foreach ($power_feeds as $feedname) {
 // --------------------------------------------------------------------------
 // Battery simulator
 // --------------------------------------------------------------------------
+$clear_battery = true;
 $battery_config = (object) array(
     // Input feeds
     "solar" => $feed->get_id($userid, "solar"),
@@ -83,17 +84,34 @@ $battery_config = (object) array(
     "max_discharge_rate" => 3000,
     "round_trip_efficiency" => 0.8,
     "timezone" => "Europe/London",
-    "offpeak_soc_target" => 0,
-    "offpeak_start" => 3,
-    // New feeds for battery simulator output
-    "charge" => get_or_create_feed($userid, "battery", "battery_charge", 10),
-    "discharge" => get_or_create_feed($userid, "battery", "battery_discharge", 10),
-    "soc" => get_or_create_feed($userid, "battery", "battery_soc", 10),
-    "import" => get_or_create_feed($userid, "battery", "import", 10),
-    "charge_kwh" => get_or_create_feed($userid, "battery", "battery_charge_kwh", 10),
-    "discharge_kwh" => get_or_create_feed($userid, "battery", "battery_discharge_kwh", 10),
-    "import_kwh" => get_or_create_feed($userid, "battery", "import_kwh", 10),
-    "solar_direct_kwh" => get_or_create_feed($userid, "battery", "solar_direct_kwh", 10),
+    "offpeak_soc_target" => 75,
+    "offpeak_start" => 2,
+    "discharge_start"=>12,
+    "discharge_end"=>22,
+    "peak_export_enabled"=>1,
+    "peak_export_start"=>16,
+    "peak_export_end"=>19,
+    
+    // Battery feeds
+    "soc" => get_or_create_feed($userid, "battery", "battery_soc", 10, $clear_battery),
+    "power" => get_or_create_feed($userid, "battery", "battery_power", 10, $clear_battery),
+    "charge" => get_or_create_feed($userid, "battery", "battery_charge", 10, $clear_battery),
+    "discharge" => get_or_create_feed($userid, "battery", "battery_discharge", 10, $clear_battery),
+    "charge_kwh" => get_or_create_feed($userid, "battery", "battery_charge_kwh", 10, $clear_battery),
+    "discharge_kwh" => get_or_create_feed($userid, "battery", "battery_discharge_kwh", 10, $clear_battery),
+    
+    // Grid feeds
+    "grid" => get_or_create_feed($userid, "battery", "grid", 10, $clear_battery),
+    "import" => get_or_create_feed($userid, "battery", "import", 10, $clear_battery),
+    "export" => get_or_create_feed($userid, "battery", "export", 10, $clear_battery),
+    "import_kwh" => get_or_create_feed($userid, "battery", "import_kwh", 10, $clear_battery),
+    "export_kwh" => get_or_create_feed($userid, "battery", "export_kwh", 10, $clear_battery),
+    
+    // More detailed breakdown
+    "solar_direct_kwh" => get_or_create_feed($userid, "battery", "solar_direct_kwh", 10, $clear_battery),
+    "solar_to_battery_kwh" => get_or_create_feed($userid, "battery", "solar_to_battery_kwh", 10, $clear_battery),
+    "battery_to_load_kwh" => get_or_create_feed($userid, "battery", "battery_to_load_kwh", 10, $clear_battery),
+    
     // Control params
     "process_mode" => "all",
     "process_start" => 0,
@@ -107,7 +125,7 @@ echo json_encode($result)."\n";
 // Helper functions
 // --------------------------------------------------------------------------
 
-function get_or_create_feed($userid, $node, $feedname, $interval) {
+function get_or_create_feed($userid, $node, $feedname, $interval, $clear = false) {
     global $feed;
     $feedid = $feed->get_id($userid, $feedname);
     if (!$feedid) {
@@ -122,5 +140,10 @@ function get_or_create_feed($userid, $node, $feedname, $interval) {
     } else {
         echo "- $feedname exists with id: $feedid\n";
     }
+    
+    if ($clear) {
+    	$feed->clear($feedid);
+    }
+    
     return $feedid;
 }
