@@ -126,12 +126,44 @@ $result = $process_classes[$battery_config->process]->process($battery_config);
 echo json_encode($result)."\n";
 
 // --------------------------------------------------------------------------
+// Option to test solarbatterykwh process with existing battery and grid feeds
+// --------------------------------------------------------------------------
+$clear_solarbatterykwh = true;
+$solarbatterykwh_config = (object) array(
+    // Input feeds
+    "solar" => $feed->get_id($userid, "solar"),
+    "use" => $feed->get_id($userid, "use"),
+    "grid" => $feed->get_id($userid, "grid"),
+    "battery_power" => $feed->get_id($userid, "battery_power"),
+
+    // Output kWh flow feeds
+    "solar_to_load_kwh" => get_or_create_feed($userid, "solarbatterykwh", "solar_to_load_kwh", 10, $clear_solarbatterykwh),
+    "solar_to_grid_kwh" => get_or_create_feed($userid, "solarbatterykwh", "solar_to_grid_kwh", 10, $clear_solarbatterykwh),
+    "solar_to_battery_kwh" => get_or_create_feed($userid, "solarbatterykwh", "solar_to_battery_kwh", 10, $clear_solarbatterykwh),
+    "battery_to_load_kwh" => get_or_create_feed($userid, "solarbatterykwh", "battery_to_load_kwh", 10, $clear_solarbatterykwh),
+    "battery_to_grid_kwh" => get_or_create_feed($userid, "solarbatterykwh", "battery_to_grid_kwh", 10, $clear_solarbatterykwh),
+    "grid_to_load_kwh" => get_or_create_feed($userid, "solarbatterykwh", "grid_to_load_kwh", 10, $clear_solarbatterykwh),
+    "grid_to_battery_kwh" => get_or_create_feed($userid, "solarbatterykwh", "grid_to_battery_kwh", 10, $clear_solarbatterykwh),
+
+    // Control params
+    "process_mode" => "all",
+    "process_start" => 0,
+    "process" => "solarbatterykwh"
+);
+
+$result = $process_classes[$solarbatterykwh_config->process]->process($solarbatterykwh_config);
+echo json_encode($result)."\n";
+
+
+
+
+// --------------------------------------------------------------------------
 // Helper functions
 // --------------------------------------------------------------------------
 
 function get_or_create_feed($userid, $node, $feedname, $interval, $clear = false) {
     global $feed;
-    $feedid = $feed->get_id($userid, $feedname);
+    $feedid = $feed->exists_tag_name($userid, $node, $feedname);
     if (!$feedid) {
         echo "Creating $feedname\n";
         $meta = new stdClass();
@@ -151,3 +183,4 @@ function get_or_create_feed($userid, $node, $feedname, $interval, $clear = false
     
     return $feedid;
 }
+
