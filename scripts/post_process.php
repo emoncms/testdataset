@@ -73,11 +73,15 @@ foreach ($power_feeds as $feedname) {
 // --------------------------------------------------------------------------
 // Battery simulator
 // --------------------------------------------------------------------------
+
 $clear_battery = true;
 $battery_config = (object) array(
     // Input feeds
     "solar" => $feed->get_id($userid, "solar"),
     "consumption" => $feed->get_id($userid, "use"),
+
+    "zero_solar" => 0,
+
     // Simulator params
     "capacity" => 9.5,
     "max_charge_rate" => 3000,
@@ -125,9 +129,11 @@ $battery_config = (object) array(
 $result = $process_classes[$battery_config->process]->process($battery_config);
 echo json_encode($result)."\n";
 
+
 // --------------------------------------------------------------------------
 // Option to test solarbatterykwh process with existing battery and grid feeds
 // --------------------------------------------------------------------------
+/*
 $clear_solarbatterykwh = true;
 $solarbatterykwh_config = (object) array(
     // Input feeds
@@ -153,9 +159,7 @@ $solarbatterykwh_config = (object) array(
 
 $result = $process_classes[$solarbatterykwh_config->process]->process($solarbatterykwh_config);
 echo json_encode($result)."\n";
-
-
-
+*/
 
 // --------------------------------------------------------------------------
 // Helper functions
