@@ -38,16 +38,17 @@ echo json_encode($result)."\n";
 // --------------------------------------------------------------------------
 // Create kWh feeds from power feeds
 // --------------------------------------------------------------------------
+
 $power_feeds = array(
     "heatpump_elec",
     "heatpump_heat",
-    "power_appliances",
-    "power_car",
-    "power_cooker",
-    "power_heatpump",
-    "power_lighting",
-    "solar",
-    "use"
+    //"power_appliances",
+    //"power_car",
+    //"power_cooker",
+    //"power_heatpump",
+    //"power_lighting",
+    //"solar",
+    //"use"
 );
 
 foreach ($power_feeds as $feedname) {
@@ -74,7 +75,7 @@ foreach ($power_feeds as $feedname) {
 // Battery simulator
 // --------------------------------------------------------------------------
 
-$clear_battery = true;
+$clear_battery = false;
 $battery_config = (object) array(
     // Input feeds
     "solar" => $feed->get_id($userid, "solar"),
@@ -97,28 +98,28 @@ $battery_config = (object) array(
     "peak_export_end"=>19,
     
     // Battery feeds
-    "soc" => get_or_create_feed($userid, "battery", "battery_soc", 10, $clear_battery),
-    "power" => get_or_create_feed($userid, "battery", "battery_power", 10, $clear_battery),
-    "charge" => get_or_create_feed($userid, "battery", "battery_charge", 10, $clear_battery),
-    "discharge" => get_or_create_feed($userid, "battery", "battery_discharge", 10, $clear_battery),
-    "charge_kwh" => get_or_create_feed($userid, "battery", "battery_charge_kwh", 10, $clear_battery),
-    "discharge_kwh" => get_or_create_feed($userid, "battery", "battery_discharge_kwh", 10, $clear_battery),
+    "soc" => get_or_create_feed($userid, "battery_sim", "battery_soc", 10, $clear_battery),
+    "power" => get_or_create_feed($userid, "battery_sim", "battery_power", 10, $clear_battery),
+    "charge" => false, // get_or_create_feed($userid, "battery", "battery_charge", 10, $clear_battery),
+    "discharge" => false, // get_or_create_feed($userid, "battery", "battery_discharge", 10, $clear_battery),
+    "charge_kwh" => false, // get_or_create_feed($userid, "battery", "battery_charge_kwh", 10, $clear_battery),
+    "discharge_kwh" => false, // get_or_create_feed($userid, "battery", "battery_discharge_kwh", 10, $clear_battery),
     
     // Grid feeds
-    "grid" => get_or_create_feed($userid, "battery", "grid", 10, $clear_battery),
-    "import" => get_or_create_feed($userid, "battery", "import", 10, $clear_battery),
-    "export" => get_or_create_feed($userid, "battery", "export", 10, $clear_battery),
-    "import_kwh" => get_or_create_feed($userid, "battery", "import_kwh", 10, $clear_battery),
-    "export_kwh" => get_or_create_feed($userid, "battery", "export_kwh", 10, $clear_battery),
+    "grid" => get_or_create_feed($userid, "battery_sim", "grid", 10, $clear_battery),
+    "import" => false, // get_or_create_feed($userid, "battery", "import", 10, $clear_battery),
+    "export" => false, // get_or_create_feed($userid, "battery", "export", 10, $clear_battery),
+    "import_kwh" => false, // get_or_create_feed($userid, "battery", "import_kwh", 10, $clear_battery),
+    "export_kwh" => false, // get_or_create_feed($userid, "battery", "export_kwh", 10, $clear_battery),
     
     // More detailed breakdown
-    "solar_to_load_kwh" => get_or_create_feed($userid, "battery", "solar_to_load_kwh", 10, $clear_battery),
-    "solar_to_grid_kwh" => get_or_create_feed($userid, "battery", "solar_to_grid_kwh", 10, $clear_battery),
-    "solar_to_battery_kwh" => get_or_create_feed($userid, "battery", "solar_to_battery_kwh", 10, $clear_battery),
-    "battery_to_load_kwh" => get_or_create_feed($userid, "battery", "battery_to_load_kwh", 10, $clear_battery),
-    "battery_to_grid_kwh" => get_or_create_feed($userid, "battery", "battery_to_grid_kwh", 10, $clear_battery),
-    "grid_to_load_kwh" => get_or_create_feed($userid, "battery", "grid_to_load_kwh", 10, $clear_battery),
-    "grid_to_battery_kwh" => get_or_create_feed($userid, "battery", "grid_to_battery_kwh", 10, $clear_battery),
+    "solar_to_load_kwh" => false, // get_or_create_feed($userid, "battery", "solar_to_load_kwh", 10, $clear_battery),
+    "solar_to_grid_kwh" => false, // get_or_create_feed($userid, "battery", "solar_to_grid_kwh", 10, $clear_battery),
+    "solar_to_battery_kwh" => false, // get_or_create_feed($userid, "battery", "solar_to_battery_kwh", 10, $clear_battery),
+    "battery_to_load_kwh" => false, // get_or_create_feed($userid, "battery", "battery_to_load_kwh", 10, $clear_battery),
+    "battery_to_grid_kwh" => false, // get_or_create_feed($userid, "battery", "battery_to_grid_kwh", 10, $clear_battery),
+    "grid_to_load_kwh" => false, // get_or_create_feed($userid, "battery", "grid_to_load_kwh", 10, $clear_battery),
+    "grid_to_battery_kwh" => false, // get_or_create_feed($userid, "battery", "grid_to_battery_kwh", 10, $clear_battery),
     
     // Control params
     "process_mode" => "all",
