@@ -75,10 +75,9 @@ foreach ($power_feeds as $feedname) {
 // Battery simulator
 // --------------------------------------------------------------------------
 
-$clear_battery = false;
-
+$clear_battery = true;
 $has_solar = true;
-$has_battery = false;
+$has_battery = true;
 
 // Only create battery feeds if battery enabled
 $battery_soc_feedid = false;
@@ -94,10 +93,11 @@ $battery_config = (object) array(
     "consumption" => $feed->get_id($userid, "use"),
 
     // Overall system config
-    "has_solar" => true, // zero's solar feed if false
-    "has_battery" => true,
+    "has_solar" => $has_solar,
+    "has_battery" => $has_battery,
 
     // Simulator params
+    "coupling" => "AC", // AC or DC battery coupling (not yet implemented)
     "capacity" => 9.5,
     "max_charge_rate" => 3000,
     "max_discharge_rate" => 3000,
