@@ -76,12 +76,26 @@ foreach ($power_feeds as $feedname) {
 // --------------------------------------------------------------------------
 
 $clear_battery = false;
+
+$has_solar = true;
+$has_battery = false;
+
+// Only create battery feeds if battery enabled
+$battery_soc_feedid = false;
+$battery_power_feedid = false;
+if ($has_battery) {
+    $battery_soc_feedid = get_or_create_feed($userid, "battery", "battery_soc", 10, $clear_battery);
+    $battery_power_feedid = get_or_create_feed($userid, "battery", "battery_power", 10, $clear_battery);
+}
+
 $battery_config = (object) array(
     // Input feeds
     "solar" => $feed->get_id($userid, "solar"),
     "consumption" => $feed->get_id($userid, "use"),
 
-    "zero_solar" => 0,
+    // Overall system config
+    "has_solar" => true, // zero's solar feed if false
+    "has_battery" => true,
 
     // Simulator params
     "capacity" => 9.5,
@@ -98,8 +112,8 @@ $battery_config = (object) array(
     "peak_export_end"=>19,
     
     // Battery feeds
-    "soc" => get_or_create_feed($userid, "battery_sim", "battery_soc", 10, $clear_battery),
-    "power" => get_or_create_feed($userid, "battery_sim", "battery_power", 10, $clear_battery),
+    "soc" => $battery_soc_feedid,
+    "power" => $battery_power_feedid,
     "charge" => false, // get_or_create_feed($userid, "battery", "battery_charge", 10, $clear_battery),
     "discharge" => false, // get_or_create_feed($userid, "battery", "battery_discharge", 10, $clear_battery),
     "charge_kwh" => false, // get_or_create_feed($userid, "battery", "battery_charge_kwh", 10, $clear_battery),
